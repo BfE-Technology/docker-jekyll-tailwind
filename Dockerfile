@@ -1,5 +1,5 @@
 FROM jekyll/jekyll:3.8
-LABEL maintainer="kevin.huang@bridgesforenterprise.com"
+LABEL maintainer="kevin.huang.han.work@gmail.com"
 
 RUN mkdir /srv/jekyll2/ && chmod 777 /srv/jekyll2/
 COPY Gemfile /srv/jekyll2/
