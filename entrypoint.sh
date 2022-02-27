@@ -50,6 +50,6 @@ fi
 mv -f /srv/jekyll2/* /srv/jekyll & echo "Moving Gemfile from temporary folder /srv/jekyll2/ to /srv/jekyll/..."
 wait
 
-jekyll serve --incremental --livereload --verbose --force_polling
+yarn dev
 
 exec "$@"
