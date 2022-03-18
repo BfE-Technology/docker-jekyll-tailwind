@@ -6,7 +6,7 @@ version: '3'
 
 services:
   github-page:
-    image: github-page-docker
+    image: ghcr.io/kevhh/jekyll-tailwind:4.1.1
     volumes:
       - './:/srv/jekyll'
       - /srv/jekyll/_site/

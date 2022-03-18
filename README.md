@@ -15,6 +15,5 @@ Note that the jekyll serve command is contained in `entrypoint.sh`.
 Move the `docker-compose.yml` to your development folder and run `docker-compose up`.
 
 ## Dependencies
-- jekyll/jekyll: 3.8
-- github-pages: 219
-- Entrypoint file obtained from [Jekyll Docker](https://github.com/envygeeks/jekyll-docker/blob/master/repos/jekyll/copy/all/usr/jekyll/bin/entrypoint). Last updated on 23 Aug 2020
+- jekyll: 4.2.1
+- tailwind: 3.0.8
