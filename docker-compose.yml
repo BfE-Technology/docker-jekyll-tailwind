@@ -1,6 +1,4 @@
-#
-#    Docker-compose file for GitHub Page
-#
+# compose file for local dev
 
 version: '3'
 
