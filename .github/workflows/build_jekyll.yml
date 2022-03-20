@@ -1,0 +1,66 @@
+name: Build and Deploy to Github Pages
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    if: github.event.head_commit.message != 'weatherbot'
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_USER: ${{ secrets.GH_USER }}
+      GH_EMAIL: ${{ secrets.GH_EMAIL }}
+      SITE: personal-page
+      
+    steps:
+      - name: Checkout
+        run: |
+          git config --global user.email "$GH_EMAIL"
+          git config --global user.name "$GH_USER"
+          git config --global credential.helper store
+          git clone -b dev https://$GH_USER:$GH_TOKEN@github.com/$GH_USER/$SITE dev
+          git clone -b prod https://$GH_USER:$GH_TOKEN@github.com/$GH_USER/$SITE prod
+
+      - name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GH_USER }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Build
+        working-directory: dev
+        run: |
+          chmod -R 777 .
+          docker-compose -f docker-compose-prod.yml up
+
+      - name: Move build to prod and remove unnecessary codes
+        run: |
+          chmod -R 777 prod/*
+          rm -rf prod/*
+          cp -r dev/_site/* prod
+          find prod/ -regextype egrep -regex ".*(\.json|\.config\.js|\.yml|\.lock|README\.md)" -delete
+          rm_code()
+          {
+              perl -0777pi -e "s,\<\!--REMOVE-IN-PROD-START--\>(.|\n)*?\<\!--REMOVE-IN-PROD-END--\>,,g" "$1"
+          }
+          find prod/ -name '*.html' -print0 | 
+              while IFS= read -r -d '' FILE; do 
+                  rm_code "$FILE"
+              done
+
+      - name: Commit
+        working-directory: prod
+        run: |
+          getdiffcode() {
+            git diff --quiet
+            echo $?
+          }
+          if [ "$(getdiffcode)" == 1 ]; then
+            git add . && git commit -m "build" && git push origin
+          else
+            git diff --exit-code
+          fi
